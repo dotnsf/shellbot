@@ -2,6 +2,8 @@
 
 ## Overview
 
+Bot style shell for Node-RED.
+
 ## Setup
 
 All you need is ...
