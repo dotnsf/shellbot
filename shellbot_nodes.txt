@@ -1,0 +1,99 @@
+﻿[
+    {
+        "id": "4a68962d.58b14",
+        "type": "template",
+        "z": "c1a343a1.e6b8a8",
+        "name": "HTML",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<html>\n<head>\n<script src=\"//code.jquery.com/jquery-2.1.4.min.js\"></script>\n<script>\nvar currdir = '';\nvar idx = 0;\n$(function(){\n    $('#cmdForm').submit( function(){\n        var cmd = $('#cmd').val();\n        //console.log( cmd );\n        var line = '<div id=\"idx' + ( ++ idx ) + '\" class=\"p1\">$ ' + cmd + '</div>';\n        $('#history').append( line );\n\n        if( cmd.indexOf( 'cd ' ) == 0 ){\n            var dir = cmd.substring( 3 );\n            if( currdir == '' ){\n                currdir = dir;\n            }else{\n                currdir += ( '/' + dir );\n            }\n            scrollBottom();\n        }else{\n            if( currdir != '' ){\n                cmd = 'cd ' + currdir + \"; \" + cmd;\n            }\n            $.ajax({\n                type: 'GET',\n                url: 'sh?cmd=' + cmd,\n                success: function( result ){\n                    //console.log( result );\n                    line = '<div class=\"p2\">' + result + '</div><br id=\"idx' + ( ++ idx ) + '\"/>';\n                    $('#history').append( line );\n                    scrollBottom();\n                },\n                error: function( XMLHttpRequest, textStatus, errorThrown ){\n                    console.log( \"error: \" + textStatus );\n                }\n            });\n        }\n        \n        $('#cmd').val('');\n        \n        return false;\n    });\n});\n\nfunction reset(){\n    $('#history').html( '' );\n}\n\nfunction scrollBottom(){\n    var positionY = $( \"#idx\" + idx ).offset().top;\n    console.log( \"idx = \" + idx + \", positionY = \" + positionY );\n    $('#history').scrollTop( positionY ) ;\n}\n</script>\n<style>\n.p1{\n    text-align: left;\n    color: white;\n}\n.p2{\n    text-align: left;\n    color: yellow;\n}\n.scr{\n    width: 80%;\n    height: 80%;\n    background-color: #000000;\n    overflow: scroll;\n}\n</style>\n<title>Shell Bot</title>\n</head>\n<body>\n<pre><div id=\"history\" class=\"scr\">\n</div></pre>\n<form id=\"cmdForm\">\n$ <input type=\"text\" id=\"cmd\" size=\"50\" placeholder=\"シェルコマンドを入力してください（例： ls -la）\">\n</form>\n</body>\n</html>",
+        "x": 319.5,
+        "y": 72.5,
+        "wires": [
+            [
+                "960cb5be.2c0d"
+            ]
+        ]
+    },
+    {
+        "id": "960cb5be.2c0d",
+        "type": "http response",
+        "z": "c1a343a1.e6b8a8",
+        "name": "",
+        "x": 476.5,
+        "y": 65,
+        "wires": []
+    },
+    {
+        "id": "616a84cc.f5a83c",
+        "type": "http in",
+        "z": "c1a343a1.e6b8a8",
+        "name": "",
+        "url": "/shell",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 166.5,
+        "y": 47.5,
+        "wires": [
+            [
+                "4a68962d.58b14"
+            ]
+        ]
+    },
+    {
+        "id": "9d33dfce.5cca38",
+        "type": "func-exec",
+        "z": "c1a343a1.e6b8a8",
+        "name": "",
+        "func": "var cmd = msg.req.query.cmd;\nif( cmd.indexOf( \"rm\" ) == 0 || cmd.indexOf( \";rm \" ) > 0 ){\n    msg.payload = \"許可されないコマンドを検出しました。\";\n    callback( msg );\n}else if( cmd.indexOf( \"vi\" ) == 0 || cmd.indexOf( \";vi\" ) > 0 ){\n    msg.payload = \"許可されないコマンドを検出しました。\";\n    callback( msg );\n}else if( cmd.indexOf( \"clear\" ) == 0 || cmd.indexOf( \";clear\" ) > 0 ){\n    msg.payload = \"許可されないコマンドを検出しました。\";\n    callback( msg );\n}else{\n  var exec = child_process.exec( msg.req.query.cmd, ( error, stdout, stderr ) => {\n    if( error ){ \n      console.error( `exec error: ${error}` );\n      msg.payload = error.message;\n      callback( msg );\n    }else{\n      console.log( `stdout: ${stdout}` );\n      console.log( `stderr: ${stderr}` );\n      msg.payload = stdout;\n      callback( msg );\n    }\n  }); \n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 300.5,
+        "y": 223.5,
+        "wires": [
+            [
+                "fdec10c5.fb3ba8",
+                "ad62bf7d.62c7a8"
+            ]
+        ]
+    },
+    {
+        "id": "83cb5a4c.ee15b8",
+        "type": "http in",
+        "z": "c1a343a1.e6b8a8",
+        "name": "",
+        "url": "/sh",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 120.5,
+        "y": 197.5,
+        "wires": [
+            [
+                "9d33dfce.5cca38"
+            ]
+        ]
+    },
+    {
+        "id": "fdec10c5.fb3ba8",
+        "type": "http response",
+        "z": "c1a343a1.e6b8a8",
+        "name": "",
+        "x": 486.5,
+        "y": 237,
+        "wires": []
+    },
+    {
+        "id": "ad62bf7d.62c7a8",
+        "type": "debug",
+        "z": "c1a343a1.e6b8a8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "false",
+        "x": 475.5,
+        "y": 171,
+        "wires": []
+    }
+]
