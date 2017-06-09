@@ -14,6 +14,10 @@ All you need is ...
 
 Then you can import shellbot_nodes.txt into your Node-RED canvas. Enjoy!
 
+## Restriction
+
+Currently, you need to install Node-RED in Linux/Unix based OS system. Windows is NOT supported.
+
 ## Licensing
 
 This code is licensed under MIT.
