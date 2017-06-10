@@ -12,7 +12,7 @@ All you need is ...
 
 - and func-exec node( http://flows.nodered.org/node/node-red-contrib-func-exec ).
 
-Then you can import shellbot_nodes.txt into your Node-RED canvas. Enjoy!
+Then you can import shellbot_nodes.txt into your Node-RED canvas, and access to /shell from browser. Enjoy!
 
 ## Restriction
 
